@@ -1,193 +1,186 @@
-# Testing Guidelines
+# AI Agent Testing & Verification Guidelines
 
-**Scope:** Universal engineering standard  
-**Applies to:** Software projects across languages, frameworks, platforms, and deployment environments
+**Scope:** Universal standard for AI-assisted software development and vibe coding  
+**Applies to:** AI coding agents and agent-enabled tools, regardless of vendor, model, IDE, language, framework, or platform  
+**Audience:** AI agents, human developers, reviewers, and project owners
 
 ---
 
 ## 1. Purpose
 
-These guidelines establish a practical, risk-based approach to software testing and verification. They apply to web, mobile, desktop, backend, API, database, automation, cloud, AI, data-processing, and enterprise systems.
+These guidelines define how an AI coding agent must plan, execute, test, and report software changes.
 
-The objective is not to run every test after every edit. It is to detect defects early, verify affected behavior efficiently, protect existing functionality, and gather enough evidence to make reliable engineering decisions.
+In AI-assisted development, an agent may generate or modify code across many files quickly. That speed makes disciplined verification essential. The agent must not treat generated code, a successful command, or a plausible explanation as proof that the requested behavior works.
 
-Project-specific test plans may extend these guidelines but should not weaken their core principles without an explicit, documented reason.
+The goal is proportionate, evidence-based verification—not running every test after every small edit.
 
-## 2. Core principles
+Project-specific instructions may add requirements based on the actual system. They must not be invented by the agent.
 
-1. **Understand before testing.** Identify the behavior, requirements, dependencies, and possible side effects before choosing tests.
-2. **Test according to risk.** Give more attention to changes that can affect security, data integrity, money, privacy, availability, or critical workflows.
-3. **Prefer fast feedback.** Run small, targeted checks during implementation and broader checks at meaningful milestones.
-4. **Automate repeatable checks.** Use automated tests for behavior that must be verified repeatedly.
-5. **Verify observable behavior.** A test should establish whether expected behavior occurred, not merely whether code executed.
-6. **Preserve existing behavior.** Include regression checks for important functionality affected by a change.
-7. **Keep evidence.** Record what was tested, the result, the environment, and any limitations.
-8. **Never confuse absence of failure with proof of correctness.** Untested behavior remains untested.
+## 2. Governing principles
 
-## 3. Testing workflow
+1. **Understand before changing.** Inspect the relevant project context, requirements, existing implementation, and dependencies before editing.
+2. **Plan proportionately.** Identify affected components, likely side effects, risk, and a suitable verification plan.
+3. **Preserve existing behavior.** Avoid unrelated rewrites and protect established functionality.
+4. **Verify generated work.** AI-generated code receives no presumption of correctness.
+5. **Test according to risk.** Expand verification when security, permissions, data, money, privacy, or production behavior is involved.
+6. **Use fast feedback.** Run focused checks during implementation; broader checks at meaningful milestones.
+7. **Report evidence, not confidence.** State exactly what ran, what passed, what failed, and what remains untested.
+8. **Respect boundaries.** Testing must not create unauthorized production changes, expose secrets, or damage user data.
+9. **Ask when authority is unclear.** Do not infer permission for consequential actions from a request to write or fix code.
 
-Use a verification cycle appropriate to the size and risk of the task:
+## 3. Agent workflow
 
-### Before implementation
-- Understand the requested behavior and acceptance criteria.
-- Inspect relevant code, dependencies, interfaces, and data flows.
-- Identify affected components and likely regression areas.
-- Identify available tests and the correct way to run them.
-- Note security, privacy, compatibility, and data-integrity risks.
+### 3.1 Before implementation
 
-### During implementation
-- Run focused checks after meaningful changes.
-- Verify the smallest affected unit or behavior first.
-- Use syntax, type, lint, build, or static-analysis checks where applicable.
-- Add or update automated tests for new or changed behavior.
-- Avoid repeatedly running unrelated, expensive test suites after trivial edits.
+The agent should:
 
-### After implementation
-- Run tests covering the changed behavior.
-- Run relevant integration tests where components interact.
-- Run targeted regression tests for affected existing behavior.
-- Review logs and test output; do not rely only on exit codes.
-- Check error paths and boundary conditions proportionate to risk.
-- Record failures, blockers, and untested areas honestly.
+- Read the relevant project instructions and documentation.
+- Inspect the existing source files involved in the task.
+- Trace important dependencies, callers, data flows, and interfaces.
+- Understand the requested outcome and acceptance criteria.
+- Identify existing tests, test commands, and environment constraints.
+- Classify risk and identify potential regressions.
+- State assumptions or ask focused questions when missing information could change the implementation.
 
-### Before release or deployment
-- Run the broader test suite required by the project's release policy.
-- Verify build/package artifacts and configuration.
-- Check migration, rollback, backup, and recovery requirements when relevant.
-- Confirm that required security and compatibility checks have passed.
-- Obtain required human approval before production-impacting actions.
+Do not invent functions, schemas, APIs, requirements, or test commands. If something cannot be established from available evidence, say so.
 
-## 4. Risk-based testing
+### 3.2 During implementation
 
-Classify each change by its potential impact. When uncertain, choose the higher level until the risk is understood.
+The agent should:
 
-| Risk level | Typical examples | Expected verification |
+- Make the smallest coherent change that satisfies the requirement.
+- Keep changes within the authorized scope.
+- Run quick, relevant checks after meaningful changes.
+- Add or update tests for changed behavior when practical.
+- Inspect generated diffs for accidental edits, omissions, and unrelated changes.
+- Avoid repeatedly running expensive, unrelated test suites after trivial edits.
+
+### 3.3 After implementation
+
+The agent should:
+
+- Review the complete diff, not only the lines it remembers changing.
+- Run tests that cover the changed behavior.
+- Test relevant integration points and dependent behavior.
+- Run targeted regression checks.
+- Review command output, warnings, logs, and test results.
+- Investigate failures instead of hiding or bypassing them.
+- Report limitations and untested areas.
+
+### 3.4 Before release or deployment
+
+The agent should follow the project's release process, verify required checks, and obtain human approval for actions that require it. A request to implement or test a feature is not automatic permission to deploy it.
+
+## 4. Risk-based verification
+
+Classify changes by potential impact and likelihood. If risk is unclear, investigate or use the higher level until it is understood.
+
+| Risk | Examples | Expected agent verification |
 |---|---|---|
-| Low | Documentation, comments, isolated styling, non-functional text | Review the change; run relevant formatting, build, or visual check if applicable |
-| Medium | Form behavior, UI interaction, business rules, calculations, API behavior | Focused automated tests, relevant integration checks, and targeted regression tests |
-| High | Authentication, authorization, sensitive data, payments, database writes/deletes, migrations, infrastructure, production configuration | Thorough unit and integration coverage, security checks, data-integrity checks, failure-path tests, targeted regression, and controlled environment verification |
+| Low | Documentation, comments, isolated visual styling, non-functional text | Inspect diff; run relevant formatting, build, or visual check where useful |
+| Medium | Forms, UI behavior, business rules, calculations, API behavior | Focused tests, relevant integration checks, and targeted regression |
+| High | Authentication, authorization, sensitive data, payments, database writes/deletes, migrations, infrastructure, production configuration | Thorough relevant unit/integration tests, security and data-integrity checks, failure-path tests, regression checks, and controlled environment verification |
 
-Risk is determined by impact and likelihood, not by the number of lines changed. A one-line permission check can be higher risk than a large cosmetic change.
+Risk is not measured by lines changed. A one-line permission change may be high risk.
 
-## 5. Testing layers
+## 5. Select the right tests
 
-Use the testing layers that fit the system's architecture.
+Use the smallest meaningful set of checks that provides confidence for the current change.
 
-### Unit tests
-Verify a small unit of behavior in isolation. They should be fast, deterministic, and focused on inputs, outputs, and relevant edge cases.
+- **Localized change:** Start with tests for the directly affected behavior.
+- **Cross-component change:** Add integration tests for the affected boundaries.
+- **Shared or foundational component:** Identify and test important dependents.
+- **High-risk change:** Expand checks to security, data integrity, failure handling, and regression.
+- **Broad or release-level change:** Run the full suite required by the project's policy.
 
-### Integration tests
-Verify interactions between components, services, APIs, databases, queues, external adapters, or other system boundaries. Use controlled dependencies and test data.
+Do not claim full verification when only a narrow test was run. Do not run a full suite mechanically after every edit when targeted checks are sufficient.
 
-### End-to-end tests
-Verify critical user or system workflows across the integrated application. Keep these focused on important journeys because they are typically slower and more operationally fragile.
+## 6. Testing layers
 
-### Other useful checks
-Depending on the project, include:
-- Static analysis, linting, formatting, and type checking.
-- Build and packaging verification.
-- Accessibility and usability checks.
-- Compatibility tests across supported platforms, browsers, or runtimes.
-- Performance, load, stress, and resilience tests.
-- Security scanning and focused security testing.
-- Data validation and migration checks.
+Use the layers that fit the project:
 
-Do not add a test category merely for appearance. Choose checks that address an actual project risk.
+- **Unit tests:** Verify isolated logic, inputs, outputs, and edge cases.
+- **Integration tests:** Verify interactions among components, APIs, services, databases, and external adapters.
+- **End-to-end tests:** Verify important user or system workflows across integrated components.
+- **Static checks:** Use available linting, formatting, type checking, security analysis, and build validation.
+- **Specialized checks:** Use performance, accessibility, compatibility, resilience, migration, or security tests when relevant to the change.
 
-## 6. Test selection and efficiency
+The agent must first discover the project's actual test tools and commands. It must not fabricate commands or claim a tool was run when it was not.
 
-Use the smallest meaningful test set that provides confidence for the current change.
+## 7. Dependency-aware regression testing
 
-- For a localized change, start with the directly affected tests.
-- For a change crossing component boundaries, include relevant integration tests.
-- For a change to a shared utility or foundational module, identify and test its major dependents.
-- For a high-risk change, expand coverage to security, data integrity, failure handling, and regression.
-- Run the full suite at appropriate milestones, such as before release or when the change has broad impact.
+Before changing a component, identify relevant callers, consumers, shared utilities, interfaces, schemas, and data flows.
 
-A test suite should be selected based on impact and dependency, not habit. Do not claim full verification when only targeted tests were run.
+After changing it:
 
-## 7. Regression testing
+- Verify the changed component directly.
+- Check important dependents and affected workflows.
+- Re-test contracts or interfaces that may have changed.
+- Add a regression test for a fixed defect where practical.
+- Record important gaps where no suitable test exists.
 
-Regression testing checks that a change has not broken behavior that previously worked.
+A passing test for one function does not establish that the full dependent workflow works.
 
-- Identify existing behavior that depends on the modified component.
-- Add regression tests for defects once fixed, where practical.
-- Prioritize critical user journeys and shared interfaces.
-- Re-run relevant tests when shared code, schemas, contracts, or configuration changes.
-- Document known gaps where regression coverage is unavailable.
+## 8. Test data and environment safety
 
-## 8. Test data and environments
+The agent must:
 
 - Prefer isolated, reproducible test environments.
 - Use synthetic or sanitized data where practical.
-- Never expose real credentials, secrets, or sensitive personal data in test fixtures or logs.
+- Never expose credentials, API keys, tokens, or sensitive personal data in code, fixtures, logs, or reports.
 - Make test setup and cleanup explicit.
-- Avoid tests that depend on uncontrolled external state.
-- Ensure tests do not unintentionally modify production data or services.
-- Use mocks or fakes for isolation where appropriate, but retain integration tests for important real interactions.
-- Document environment assumptions, versions, and required services.
+- Avoid uncontrolled external dependencies where practical.
+- Confirm that tests will not unintentionally write to production systems.
+- Use mocks or fakes for isolation when appropriate, while retaining meaningful integration checks.
+- State relevant environment assumptions and limitations.
 
-## 9. Negative, boundary, and failure-path testing
+If the agent cannot determine whether an operation targets production, it must stop and ask before executing it.
 
-Do not test only the expected successful path. Where relevant, verify:
+## 9. Negative, boundary, and failure-path checks
 
-- Empty, missing, malformed, and invalid inputs.
+Where relevant, verify:
+
+- Missing, empty, malformed, and invalid inputs.
 - Minimum, maximum, and out-of-range values.
-- Unauthorized and unauthenticated access.
-- Duplicate submissions and repeated operations.
-- Timeouts, network failures, unavailable services, and retries.
+- Authorized and unauthorized access.
+- Duplicate requests and repeated operations.
+- Timeouts, network errors, unavailable services, and retries.
 - Partial failures and interrupted workflows.
-- Concurrent requests and conflicting updates.
+- Conflicting or concurrent updates.
 - Invalid state transitions and recovery behavior.
 
-Select cases according to the behavior and risk; not every item applies to every feature.
+Choose cases based on the feature and its risks. Do not mechanically test irrelevant cases.
 
-## 10. Automation standards
+## 10. AI-specific verification duties
 
-Automate checks that are repeatable, valuable, and stable enough to maintain.
+AI agents must apply additional care because generated code can look convincing while being incomplete or incorrect.
 
-- Keep automated tests deterministic wherever possible.
-- Avoid arbitrary sleeps when synchronization or condition-based waits are available.
-- Make failures diagnosable through useful assertions and output.
-- Keep test names and structure understandable.
-- Separate test setup, execution, and cleanup.
-- Avoid tests that pass without actually exercising the intended behavior.
-- Keep test execution practical for the development workflow.
-- Review flaky tests; do not normalize repeated intermittent failures.
+- **No self-certification:** The fact that the agent wrote the code is not evidence that it works.
+- **No assumed execution:** Never say a test, build, command, or browser check passed unless it was actually executed and its result inspected.
+- **No invented coverage:** Do not imply that a test covers behavior it does not exercise.
+- **No hidden failure:** Do not suppress errors, weaken assertions, skip tests, or remove safeguards merely to obtain a passing result.
+- **No unsupported claims:** Distinguish code inspection, static checks, automated tests, manual checks, and production observations.
+- **No blind trust in tool output:** Inspect relevant output and confirm it relates to the intended project, branch, and environment.
+- **No unrelated cleanup:** Do not use a task as an excuse to rewrite or reformat unrelated files.
+- **No unapproved scope expansion:** Ask before making consequential changes beyond the request.
 
-Automation supports engineering judgment; it does not replace code review, exploratory testing, or production safeguards.
+## 11. Failure handling
 
-## 11. Security and data-integrity verification
+When a check fails, the agent should:
 
-For changes involving identity, permissions, sensitive information, persistence, or external access:
+1. Preserve the failure output and context.
+2. Determine whether the cause is the code, test, environment, configuration, or external dependency.
+3. Reproduce the issue where practical.
+4. Explain the failure and its impact.
+5. Correct the underlying issue only within the authorized scope.
+6. Re-run the failed check and relevant regression tests.
+7. Record unresolved failures and blockers.
 
-- Verify authorization at the trusted enforcement boundary, not only in the user interface.
-- Test both permitted and denied actions.
-- Check that users and components cannot access data beyond their authorized scope.
-- Validate inputs and enforce relevant constraints at the appropriate layer.
-- Verify that failed operations do not leave unintended partial state.
-- Check that logs and error messages do not disclose secrets or sensitive data.
-- Test migrations and destructive operations in a safe, representative environment.
-- Confirm backup and recovery procedures where the change can affect critical data.
+A test that could not run is blocked, not passed. A skipped test is not a successful test.
 
-Security-sensitive changes require evidence beyond a successful happy-path test.
+## 12. Verification status vocabulary
 
-## 12. Failure handling
-
-When a test fails:
-
-1. Preserve the failure output and relevant context.
-2. Determine whether the failure is caused by the change, the test, the environment, or an external dependency.
-3. Reproduce the failure where practical.
-4. Do not silently skip, weaken, or delete a failing test simply to obtain a green run.
-5. Fix the underlying issue or document a justified exception.
-6. Re-run the failed test and the relevant regression set after the correction.
-
-A test that could not run because of an environment or dependency issue is blocked, not passed.
-
-## 13. Verification result vocabulary
-
-Use explicit, consistent result labels in reports:
+Use these labels consistently:
 
 | Status | Meaning |
 |---|---|
@@ -196,55 +189,56 @@ Use explicit, consistent result labels in reports:
 | **BLOCKED** | The check could not run because of an identified blocker |
 | **NOT TESTED** | No verification was performed |
 | **PARTIALLY VERIFIED** | Some relevant behavior was checked, but coverage is incomplete |
-| **SOURCE REVIEWED** | Code or configuration was inspected, but runtime behavior was not tested |
-| **NOT APPLICABLE** | The check does not apply; provide a brief reason |
+| **SOURCE REVIEWED** | Code or configuration was inspected; runtime behavior was not tested |
+| **NOT APPLICABLE** | The check does not apply; give a brief reason |
 
-Do not report a build, test, security property, or deployment as successful unless supporting evidence exists.
+Never convert BLOCKED, NOT TESTED, or SOURCE REVIEWED into PASSED.
 
-## 14. Verification reporting
+## 13. Verification report requirements
 
-For meaningful tasks, record:
+For meaningful changes, the agent should report:
 
-- Task or change identifier and date.
-- Summary of the change and affected components.
+- Task summary and date.
+- Affected files or components.
 - Risk level and reason.
-- Tests and commands performed.
-- Environment and relevant versions.
-- Result for each check.
+- Tests and commands actually executed.
+- Environment and relevant versions, where known.
+- Result of each check.
 - Failures, warnings, and blockers.
-- Untested areas and known limitations.
+- Untested areas and limitations.
 - Overall verification assessment.
-- Reviewer or approval information when required.
+- Any required human approval still outstanding.
 
-Keep reports factual. Separate observed results from assumptions and recommendations.
+Keep observations separate from assumptions, recommendations, and claims.
 
-## 15. Release and production safeguards
+## 14. Security, data, and production safeguards
 
-- Test in a non-production environment before production when feasible.
-- Verify configuration and secrets handling for the target environment.
-- Confirm that database or data migrations have a tested recovery strategy.
-- Use staged or gradual rollout methods when appropriate.
-- Monitor relevant logs, metrics, and critical workflows after release.
-- Define rollback or mitigation steps for material risks.
-- Do not deploy, modify production data, or perform destructive actions without the required authorization.
+For changes involving identity, permissions, sensitive data, persistence, external access, or production systems:
 
-A successful test suite is not, by itself, authorization to deploy.
+- Verify controls at the trusted enforcement boundary, not only in the UI.
+- Test both permitted and denied operations.
+- Check data isolation and access boundaries.
+- Validate inputs and important state transitions.
+- Check for unintended partial writes or destructive side effects.
+- Ensure logs and reports do not reveal secrets.
+- Test migrations and destructive operations in a safe environment.
+- Confirm recovery or rollback arrangements where relevant.
 
-## 16. Continuous improvement
+The agent must not deploy, publish, delete important resources, alter production data, change access controls, or perform other consequential external actions without the required explicit authorization.
 
-Testing practices should evolve with the system.
+## 15. Continuous improvement
 
-- Track recurring defects and add preventive tests where practical.
-- Review escaped defects to identify missing checks.
-- Remove obsolete or misleading tests.
-- Improve slow or flaky tests when they impede feedback.
-- Measure coverage as one signal, not as proof of quality.
-- Prefer meaningful assertions and risk coverage over arbitrary coverage targets.
+Agents and project owners should:
 
-## 17. Final standard
+- Turn recurring defects into preventive tests where practical.
+- Review defects that escaped testing to identify missing checks.
+- Remove obsolete or misleading tests only with a justified reason.
+- Improve slow or flaky tests that undermine feedback.
+- Treat coverage percentages as one signal, not proof of correctness.
+- Prefer meaningful assertions and risk coverage over arbitrary targets.
 
-The expected engineering approach is:
+## 16. Final operating rule
 
-**Understand the change. Assess its risk. Test the affected behavior first. Expand verification according to dependencies and impact. Automate repeatable checks. Preserve evidence. Be explicit about what remains untested.**
+**Understand the project. Identify the impact. Change only what is authorized. Test the affected behavior first. Expand verification according to risk and dependencies. Inspect the evidence. Report honestly. Obtain approval before consequential actions.**
 
-The goal is not maximum testing activity. The goal is reliable software, achieved with efficient and proportionate verification.
+The objective is not maximum testing activity. It is reliable software development through fast feedback, controlled autonomy, and evidence-based verification.
