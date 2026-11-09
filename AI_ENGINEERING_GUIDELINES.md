@@ -187,6 +187,28 @@ Keep records accurate and concise.
 
 Documentation should reduce future effort, not become an independent administrative burden.
 
+#### Project documentation protocol
+
+When a project maintains `REPORT.md` and `PROJECT_OVERVIEW.md`, use them for different purposes and keep them synchronized with the actual repository state:
+
+- **`REPORT.md` is the operational status and development control document.** Read it first when starting a task. Use its current status, active work, development queue, problem register, verification results, blockers, and recent change history to orient the work.
+- **`PROJECT_OVERVIEW.md` is the application knowledge document.** Consult the relevant sections to understand architecture, modules, data structures, roles, workflows, and business rules. Do not reread the entire document when only a specific area is relevant.
+- **Source code and Git state are authoritative for what is actually implemented.** Documentation is useful context, not proof that code or a test result exists. When documentation conflicts with source or repository state, verify the relevant facts and correct the stale documentation.
+
+At task completion, reconcile `REPORT.md` with the verified outcome before considering the task complete. Update only the sections affected by meaningful changes:
+
+1. Add newly confirmed, actionable defects or risks; distinguish confirmed defects from hypotheses and unverified risks.
+2. Update the active development task and queue when work starts, changes priority, becomes blocked, or is completed. Do not leave completed work marked open or stale work presented as current.
+3. Record tests actually executed, their environment, and accurate PASSED, FAILED, or UNTESTED results. Never infer test success.
+4. Record relevant commit, push, branch, and deployment status only after those operations are confirmed.
+5. Preserve historical findings and completed work. Update their status rather than silently deleting their evidence.
+
+Update `PROJECT_OVERVIEW.md` only when verified changes alter or clarify the application's architecture, modules, data model, roles, workflows, integrations, or business rules. Routine fixes and cosmetic changes do not require an overview edit.
+
+Keep both documents concise, avoid duplicating the same detail, and do not create additional documentation merely to satisfy this protocol. For a trivial change with no meaningful project-status or knowledge impact, explicitly determine that no documentation update is needed rather than adding noise.
+
+If a documentation update cannot be completed, report the exact reason and leave the task's documentation status explicit; never silently claim synchronization. Documentation maintenance is part of task closure, but it must remain proportionate and must not become a separate audit or block otherwise-complete work for unrelated optional details.
+
 ### 9. Git and Change Management
 
 Use Git as the authoritative source history.
