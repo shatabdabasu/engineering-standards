@@ -197,8 +197,29 @@ Use Git as the authoritative source history.
 - Inspect the final diff.
 - Preserve unrelated work.
 - Do not overwrite historical project records.
-- Follow the project's branch, commit, review, and release policies.
-- Never push, deploy, or perform destructive external actions without the required authorization.
+- Follow the project's branch, review, and release policies.
+- Never force-push, rewrite shared history, or overwrite remote work to bypass a conflict.
+
+#### Routine commit and push are part of development
+
+When the task authorizes implementation, committing and pushing completed, verified source changes to the project's normal authorized branch are standard development operations. **Do not ask for separate routine approval to commit or push.**
+
+- After implementation, relevant checks, and diff review, create a clear, focused commit.
+- Push the commit to the agreed remote branch, normally the project's designated development branch or `main` when that is the established workflow.
+- Before pushing, account for the current remote state. Fetch or otherwise inspect it when needed; integrate remote changes safely rather than overwriting them.
+- Preserve unrelated user changes and existing commits.
+- If a conflict, branch protection rule, missing permission, or unclear branch policy prevents the push, stop that operation, preserve the work, and report the precise blocker. Do not force-push.
+- Report the commit and push result accurately.
+
+#### A push is not a deployment
+
+A Git commit or push updates repository history. It does not, by itself, authorize or perform a production deployment. Treat these as separate operations:
+
+- **Commit:** record the source change in Git.
+- **Push:** publish the commit to the authorized remote repository.
+- **Deploy / publish to production:** release or activate the change in a live environment.
+
+Routine commits and pushes are permitted by default when implementation is authorized. Production deployment, production data changes, production permission changes, and destructive external actions still require explicit authorization under the project's rules.
 
 ### 10. AI Collaboration
 
@@ -219,18 +240,18 @@ Neither agent should blindly accept the other's conclusions. Both should challen
 
 AI agents should exercise initiative within their authorized scope.
 
-They may investigate, reason, propose solutions, modify authorized source files, and run permitted tests.
+They may investigate, reason, propose solutions, modify authorized source files, run permitted tests, and commit and push verified source changes as part of an authorized development task.
 
 They must respect restrictions involving:
 
 - Production data.
 - User permissions and sensitive information.
 - External services.
-- Deployment and publishing.
+- Production deployment and publishing.
 - Destructive operations.
 - Repository history and access.
 
-Ask for human input when a material requirement is ambiguous, an important product decision is necessary, or an action exceeds authorization.
+A normal commit or push to the authorized project repository is not a production deployment and does not require a separate approval when implementation is already authorized. Ask for human input when a material requirement is ambiguous, an important product decision is necessary, or an action exceeds authorization.
 
 Do not interrupt work for trivial decisions that can be resolved through sound engineering judgment.
 
@@ -258,10 +279,10 @@ AI agents should complete the work they are authorized to perform. A task that a
 3. Implement the requested behavior.
 4. Run proportionate, relevant checks and review the diff.
 5. Update project records only when the verified outcome or future engineering knowledge materially changes.
-6. Commit or publish only when authorized.
-7. Report what was delivered and any real limitations.
+6. Commit and push the completed, verified source changes to the authorized remote branch as the normal completion workflow.
+7. Report what was delivered, the commit/push result, and any real limitations.
 
-Do not ask for routine approvals or repeat completed discovery. Do not stop after identifying a fix when implementation is within scope.
+Do not ask for routine approval to commit or push when implementation is authorized and the destination is the established project branch. Do not stop after identifying a fix when implementation is within scope.
 
 #### B. Make sensible engineering decisions
 
@@ -275,13 +296,15 @@ Do not ask for routine approvals or repeat completed discovery. Do not stop afte
 
 Complete all safe work that remains possible. State the exact blocker, what is complete, and the smallest action needed to proceed. Do not repeatedly investigate a blocker whose cause is already known.
 
+If a push is blocked by a conflict, permissions, branch protection, or remote policy, preserve the local work and report the blocker. Never force-push or discard remote work to claim completion.
+
 #### D. Respect scope and authority
 
-Operational ownership does not grant unlimited permission. Do not perform production data changes, permission changes, deployments, destructive external actions, or repository operations beyond the granted authority.
+Operational ownership does not grant unlimited permission. Production data changes, production permission changes, production deployment, destructive external actions, and repository operations beyond the established branch/workflow still require the appropriate authorization.
 
 #### E. Keep completion reports concise
 
-Report the delivered functionality, important files changed, relevant checks and their results, commit/publication status, and any remaining material risk. Do not produce a lengthy audit report for a routine change.
+Report the delivered functionality, important files changed, relevant checks and their results, commit SHA, push destination/result, and any remaining material risk. Do not produce a lengthy audit report for a routine change.
 
 ---
 
