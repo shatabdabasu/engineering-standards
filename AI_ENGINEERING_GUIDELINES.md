@@ -104,26 +104,83 @@ For small, isolated changes, use proportionate investigation rather than unneces
 
 ### 7. Efficient Testing and Verification
 
-Testing should provide meaningful confidence at reasonable time cost.
+Testing should provide meaningful confidence at reasonable time cost. The objective is to verify the required behavior, not merely to demonstrate that the code executes.
 
-Choose tests according to the change:
+#### A. Plan tests around expected behavior
 
-- Syntax and static checks for relevant source changes.
-- Targeted tests for modified functionality.
-- Regression tests for affected dependencies.
-- Integration tests for interactions between components.
+Before implementing a significant change, identify:
+
+- The behavior that must work.
+- The expected result for normal use.
+- Relevant failure conditions and edge cases.
+- Existing functionality that could be affected.
+- The appropriate test environment and available evidence.
+
+Keep test planning proportionate to the change. A small isolated fix does not require a large test plan.
+
+#### B. Choose tests according to risk
+
+Use the relevant combination of:
+
+- Syntax and static checks for changed source files.
+- Targeted unit tests for modified functions and logic.
+- Edge-case tests for empty, missing, invalid, duplicate, unexpected, and boundary inputs where relevant.
+- Integration tests for interactions between components and external services.
+- Regression tests for affected existing functionality.
 - Security and authorization tests for access-control changes.
-- Live-environment testing when local testing cannot establish actual production behavior.
+- Browser and device tests for user-facing workflows when applicable.
+- Live-environment tests when local testing cannot establish actual service behavior.
 
-Do not run expensive or unrelated tests without a reason.
+Do not run expensive or unrelated tests without a reason. Do not skip a relevant test merely because a mock test passed.
+
+#### C. Verify data integrity
+
+For changes that create, update, or delete data, verify that:
+
+- Intended records are created or updated correctly.
+- Unrelated records remain unchanged.
+- Existing data is not lost, blanked, or overwritten unintentionally.
+- Deletion happens only through the intended and authorized action.
+- Relationships and dependent records remain consistent.
+- Recovery or rollback behavior is tested when the change relies on it.
+
+Use representative test data and isolated environments wherever possible. Do not experiment on production data without authorization.
+
+#### D. Identify the test environment
+
+Clearly state where each test ran. Distinguish between:
+
+- **Static:** Source inspection, linting, type checks, or syntax validation.
+- **Unit / mocked:** Individual logic tested with simulated dependencies.
+- **Integration:** Multiple components or real service interfaces tested together.
+- **Browser / device:** Actual user interface and workflows exercised in a browser or on a device.
+- **Live / production:** The deployed application and actual production services or data tested with authorization.
+
+A result from one environment does not prove behavior in another. In particular, mocked tests do not establish that real APIs, databases, permissions, authentication, or deployments work.
+
+#### E. Record evidence and results
+
+For each meaningful test, record:
+
+- What was tested and the expected result.
+- The environment and method used.
+- The actual result.
+- The evidence, such as test output, assertion results, logs, or reproducible observations.
+- Any limitation that affects confidence.
 
 Always distinguish:
 
-- **PASSED:** Test executed successfully.
-- **FAILED:** Test executed and failed.
-- **UNTESTED:** Test was not executed or could not be performed.
+- **PASSED:** The test was executed and the expected result was supported by evidence.
+- **FAILED:** The test was executed and did not meet the expected result.
+- **UNTESTED:** The test was not executed or could not be performed.
 
-Never claim that a test passed without evidence.
+Never claim that a test passed without evidence. Do not describe a mocked or partial test as a complete integration or production test.
+
+#### F. Review independently
+
+After implementation and testing, inspect the final changes and test evidence independently of the original implementation reasoning. Check for missed requirements, weak assertions, untested failure paths, unintended side effects, and regressions. Fix failures and rerun the relevant tests before reporting completion.
+
+Never claim that all behavior is verified when important environments or scenarios remain untested.
 
 ### 8. Engineering Memory and Documentation
 
