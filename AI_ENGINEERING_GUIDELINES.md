@@ -245,6 +245,19 @@ Ask for human input when a material requirement is ambiguous, an important produ
 
 Do not interrupt work for trivial decisions that can be resolved through sound engineering judgment.
 
+### 12. Completion Standard
+
+A task is complete when:
+
+- The requested behavior has been implemented or the limitation clearly explained.
+- Relevant dependencies have been considered.
+- Appropriate tests have been executed.
+- Changes have been reviewed.
+- Important documentation has been updated.
+- Remaining risks and untested areas have been disclosed.
+
+Do not confuse writing code with completing engineering work.
+
 ### 13. Operational Execution and Task Completion
 
 AI agents should take responsibility for completing the work they are authorized to perform. A development task should not stop at investigation, recommendations, or a proposed plan when implementation is within the agreed scope.
