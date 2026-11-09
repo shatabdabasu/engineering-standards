@@ -75,18 +75,32 @@ Increase investigation and verification when changes affect security, authentica
 
 ### 5. Standard Development Workflow
 
-Use this general workflow:
+Use the workflow as a guide, not a mandatory ceremony:
 
-**Understand → Plan → Implement → Test → Review → Record**
+**Understand → Implement → Verify → Move Forward**
 
-1. Understand the requirement and existing behavior.
-2. Inspect relevant source files, dependencies, and constraints.
-3. Identify the appropriate solution and its potential impact.
-4. Implement the smallest reliable change.
-5. Execute relevant tests and inspect the resulting changes.
-6. Record important findings, decisions, changes, and verification results.
+1. Understand the requested behavior and acceptance criteria.
+2. Inspect the relevant source, dependencies, and existing changes.
+3. Implement the smallest reliable solution.
+4. Run the checks that are relevant to the change and review the diff.
+5. Record meaningful outcomes and continue to the next agreed task.
 
-Adapt the workflow to the task. Do not repeat steps that have already been completed and remain valid.
+Skip steps that have already been completed and remain valid. Do not restart discovery, planning, or setup for every task.
+
+#### Development-first execution
+
+**When implementation is authorized and the requirement is sufficiently clear, development is the default.** The purpose of investigation, planning, testing, and documentation is to enable safe delivery—not to replace delivery.
+
+- Start from existing project knowledge, prior findings, and the current working state.
+- Inspect only the files and dependencies needed for the task. Expand the investigation only when evidence reveals a wider impact.
+- If a defect and its cause are already established, fix it instead of repeating the audit.
+- Prefer implementing a complete, useful slice of functionality over producing another plan or process document.
+- Reuse existing scripts, tests, fixtures, and tools. Do not build or repair a testing platform unless the lack of one is genuinely blocking reliable work.
+- Do not create new documentation, inventories, reports, abstractions, or infrastructure unless they solve a real, demonstrated need.
+- Do not let optional live testing block source-level completion. Use live testing when the requirement depends on behavior that local checks cannot establish, and respect all authorization boundaries.
+- Once a task is complete, move to the next agreed development priority without repeating project discovery.
+
+A focused investigation is good engineering. Repeating completed investigation is wasted effort.
 
 ### 6. Project Understanding and Dependencies
 
@@ -104,123 +118,58 @@ For small, isolated changes, use proportionate investigation rather than unneces
 
 ### 7. Efficient Testing and Verification
 
-Testing should provide meaningful confidence at reasonable time cost. The objective is to verify the required behavior, not merely to demonstrate that the code executes.
+Testing exists to catch meaningful defects and protect working behavior. Choose the smallest credible set of checks that gives confidence for the risk involved.
 
-#### A. Plan tests around expected behavior
+#### A. Match verification to the change
 
-Before implementing a significant change, identify:
+Use relevant checks, not every available check:
 
-- The behavior that must work.
-- The expected result for normal use.
-- Relevant failure conditions and edge cases.
-- Existing functionality that could be affected.
-- The appropriate test environment and available evidence.
+- Syntax, lint, or type checks for changed source.
+- Existing unit tests or focused tests for changed logic.
+- Regression tests for behavior that could reasonably be affected.
+- Integration, browser, or device tests when component interaction or user experience is part of the requirement.
+- Security and authorization tests when access boundaries change.
+- Live-service tests only when local evidence cannot establish the required behavior.
 
-Keep test planning proportionate to the change. A small isolated fix does not require a large test plan.
+For a small isolated change, a focused test and diff review may be enough. For security-sensitive, data-destructive, or production-critical changes, increase verification accordingly.
 
-#### B. Choose tests according to risk
+#### B. Reuse the existing test environment
 
-Use the relevant combination of:
+- First use the project's existing test commands, harnesses, fixtures, and CI.
+- Do not recreate, redesign, or expand test infrastructure for an ordinary feature or bug fix.
+- Do not install duplicate tools or introduce new dependencies without a demonstrated benefit.
+- Repair shared test setup only when it is genuinely broken and the repair will remove a recurring blocker.
+- If no test environment exists, use the simplest credible check appropriate to the task. Add reusable infrastructure only when repeated work justifies it.
 
-- Syntax and static checks for changed source files.
-- Targeted unit tests for modified functions and logic.
-- Edge-case tests for empty, missing, invalid, duplicate, unexpected, and boundary inputs where relevant.
-- Integration tests for interactions between components and external services.
-- Regression tests for affected existing functionality.
-- Security and authorization tests for access-control changes.
-- Browser and device tests for user-facing workflows when applicable.
-- Live-environment tests when local testing cannot establish actual service behavior.
+A test harness is software too. If it fails before reaching application assertions, distinguish a harness/setup failure from an application failure. Do not change application code to satisfy an inaccurate mock.
 
-Do not run expensive or unrelated tests without a reason. Do not skip a relevant test merely because a mock test passed.
+#### C. Keep tests faithful and useful
 
-#### C. Verify data integrity
+- Test expected behavior and the important failure cases for the change.
+- Ensure mocks represent the real interface closely enough for the claim being made.
+- Do not add weak assertions merely to produce a passing result.
+- Do not run expensive or unrelated suites without a reason.
+- Do not repeat tests whose evidence remains valid and whose underlying code has not changed.
 
-For changes that create, update, or delete data, verify that:
+#### D. Protect data and production
 
-- Intended records are created or updated correctly.
-- Unrelated records remain unchanged.
-- Existing data is not lost, blanked, or overwritten unintentionally.
-- Deletion happens only through the intended and authorized action.
-- Relationships and dependent records remain consistent.
-- Recovery or rollback behavior is tested when the change relies on it.
+For changes that create, update, or delete data, check that intended records change and unrelated records remain intact. Verify deletion, relationships, and rollback behavior where relevant.
 
-Use representative test data and isolated environments wherever possible. Do not experiment on production data without authorization.
+Use isolated or representative data whenever possible. Never experiment on production data, change production permissions, or deploy without the required authorization.
 
-#### D. Identify the test environment
+#### E. Report evidence accurately
 
-Clearly state where each test ran. Distinguish between:
+Identify the environment used and distinguish:
 
-- **Static:** Source inspection, linting, type checks, or syntax validation.
-- **Unit / mocked:** Individual logic tested with simulated dependencies.
-- **Integration:** Multiple components or real service interfaces tested together.
-- **Browser / device:** Actual user interface and workflows exercised in a browser or on a device.
-- **Live / production:** The deployed application and actual production services or data tested with authorization.
+- **PASSED:** Executed and supported by evidence.
+- **FAILED:** Executed and did not meet the expected result.
+- **UNTESTED:** Not executed or could not be performed.
 
-A result from one environment does not prove behavior in another. In particular, mocked tests do not establish that real APIs, databases, permissions, authentication, or deployments work.
+Static checks, mocked tests, integration tests, browser tests, and live tests prove different things. Never claim that one proves another. Report genuine limitations briefly; do not turn optional testing into a reason to stop otherwise-complete work.
 
-#### E. Record evidence and results
+#### F. Review the change
 
-For each meaningful test, record:
-
-- What was tested and the expected result.
-- The environment and method used.
-- The actual result.
-- The evidence, such as test output, assertion results, logs, or reproducible observations.
-- Any limitation that affects confidence.
-
-Always distinguish:
-
-- **PASSED:** The test was executed and the expected result was supported by evidence.
-- **FAILED:** The test was executed and did not meet the expected result.
-- **UNTESTED:** The test was not executed or could not be performed.
-
-Never claim that a test passed without evidence. Do not describe a mocked or partial test as a complete integration or production test.
-
-#### G. Establish a reusable test environment
-
-For every project that will be maintained beyond a one-off change, establish and document a reproducible test environment before relying on repeated testing. Do not make each task rediscover or reconstruct the environment.
-
-The project must identify, as applicable:
-
-- Required language/runtime and supported version.
-- Package manager, dependency manifest, lockfile, and installation command.
-- Test, lint, type-check, build, and validation tools with their exact commands.
-- Required environment variables, credentials, local services, APIs, databases, and external dependencies.
-- Safe test configuration, isolated test data, fixtures, and cleanup/reset procedure.
-- Browser/device tooling and supported test targets.
-- Which checks run locally and which run in continuous integration.
-
-Prefer the project's existing ecosystem and tools. Pin or constrain versions where reproducibility requires it. Provide one documented setup path and clear commands to run the relevant test suites. Avoid installing duplicate tools, changing global machine configuration, or adding heavyweight infrastructure without a demonstrated need.
-
-At the start of a task, inspect and reuse the established environment. If it is missing or broken, diagnose the setup before interpreting test output as an application failure. Repair reusable environment configuration when authorized and proportionate; do not silently work around it separately in every task.
-
-#### H. Validate test infrastructure before trusting it
-
-A test harness, mock, fixture, emulator, or test script is itself software and must be checked.
-
-- Confirm that the harness starts and completes a small known-good smoke test.
-- Inventory the application APIs and behaviors the test exercises; ensure mocks implement the required contract, including return types and failure behavior.
-- Keep mocks faithful to the real platform. Do not add mock behavior merely to force an assertion to pass.
-- Separate setup errors, harness errors, assertion failures, and application failures in reports.
-- When a test fails before reaching its assertions, classify the result as a test-infrastructure failure or blocked test—not as an application defect.
-- Do not repair mocks one missing method at a time without first reviewing the required API surface and test strategy.
-- If the harness becomes disproportionately expensive to maintain, choose a simpler credible method, such as a focused test, platform emulator, disposable integration environment, or authorized test instance.
-- Never modify production code solely to satisfy an inaccurate mock.
-- Keep a minimal smoke test that proves the environment can execute tests, then run behavior-specific assertions.
-
-The environment is ready only when its documented setup completes and its smoke test produces the expected result. This does not, by itself, prove application behavior.
-
-#### I. Keep setup reusable and proportionate
-
-Create or maintain reusable setup scripts, configuration, fixtures, and CI workflows when they materially reduce repeated effort. Keep project-specific setup in the project repository; keep universal principles in this standard. A small project may use a short setup note and a single test command. A production project may require isolated services, test accounts, seeded data, cleanup, and CI checks.
-
-Do not promise that one universal toolchain fits every language or platform. Select tools for the actual stack, document why they are used, and avoid unnecessary tool proliferation.
-
-#### F. Review independently
-
-After implementation and testing, inspect the final changes and test evidence independently of the original implementation reasoning. Check for missed requirements, weak assertions, untested failure paths, unintended side effects, and regressions. Fix failures and rerun the relevant tests before reporting completion.
-
-Never claim that all behavior is verified when important environments or scenarios remain untested.
+Inspect the final diff for missed requirements, unintended side effects, security issues, and regressions. Fix demonstrated failures and rerun the relevant checks.
 
 ### 8. Engineering Memory and Documentation
 
@@ -300,63 +249,39 @@ Do not confuse writing code with completing engineering work.
 
 ### 13. Operational Execution and Task Completion
 
-AI agents should take responsibility for completing the work they are authorized to perform. A development task should not stop at investigation, recommendations, or a proposed plan when implementation is within the agreed scope.
+AI agents should complete the work they are authorized to perform. A task that asks for implementation should normally result in implemented functionality—not only an audit, recommendation, plan, or prompt for another agent.
 
-#### A. Own the authorized task end to end
+#### A. Own the authorized task
 
-For tasks that authorize implementation, carry the work through the relevant stages:
+1. Use existing project knowledge and inspect the relevant current code.
+2. Resolve only material uncertainties that prevent implementation.
+3. Implement the requested behavior.
+4. Run proportionate, relevant checks and review the diff.
+5. Update project records only when the verified outcome or future engineering knowledge materially changes.
+6. Commit or publish only when authorized.
+7. Report what was delivered and any real limitations.
 
-1. Understand the requirement and acceptance criteria.
-2. Inspect the current source, project guidance, dependencies, and existing changes.
-3. Plan a proportionate solution.
-4. Implement the smallest reliable change.
-5. Execute relevant tests and fix demonstrated failures.
-6. Independently review the final changes and test evidence.
-7. Update relevant project records.
-8. Commit and publish changes only when authorized by the project and task instructions.
-9. Report the outcome, evidence, and remaining limitations.
+Do not ask for routine approvals or repeat completed discovery. Do not stop after identifying a fix when implementation is within scope.
 
-Do not stop after identifying a problem when the task authorizes fixing it. Do not ask for approval for routine decisions already covered by the agreed scope and operating rules.
+#### B. Make sensible engineering decisions
 
-#### B. Use evidence, not assumptions
+- Prefer the smallest complete solution that satisfies the requirement.
+- Preserve working behavior and unrelated changes.
+- Do not invent requirements, defects, or test results.
+- Do not expand scope or rewrite working components without evidence.
+- Ask one focused question only when a material product decision or requirement is genuinely ambiguous.
 
-- Confirm a problem before treating it as a defect.
-- Do not invent requirements, failures, or test results.
-- Prefer the smallest change that satisfies the requirement.
-- Do not rewrite working components or expand scope without a demonstrated need.
-- If tests show that no defect exists, preserve the working implementation and report the evidence.
-- If a requirement is materially ambiguous or a product decision is needed, ask a focused question rather than guessing.
+#### C. Handle blockers without abandoning useful work
 
-#### C. Handle blockers honestly
-
-If work cannot safely continue because of missing access, unavailable tools, environment limitations, conflicting changes, or an authorization boundary:
-
-- Complete all safe and useful work that remains possible.
-- Identify the exact blocker and why it prevents the next step.
-- State what has and has not been completed.
-- Provide the smallest actionable request or next step needed to proceed.
-- Do not claim completion or verification that has not occurred.
-
-Avoid repeated investigation when earlier findings remain valid. Reuse verified project knowledge and focus effort on what has changed.
+Complete all safe work that remains possible. State the exact blocker, what is complete, and the smallest action needed to proceed. Do not repeatedly investigate a blocker whose cause is already known.
 
 #### D. Respect scope and authority
 
-Operational ownership does not grant unlimited permission. Follow the task's explicit scope, project-specific rules, and human authorization requirements.
+Operational ownership does not grant unlimited permission. Do not perform production data changes, permission changes, deployments, destructive external actions, or repository operations beyond the granted authority.
 
-In particular, do not perform production data changes, permission changes, deployments, destructive external actions, or repository operations beyond the granted authority. When authorization is absent, stop at the boundary and report what approval is needed.
+#### E. Keep completion reports concise
 
-#### E. Provide a useful completion report
-
-At the end of the task, summarize:
-
-- What was requested and what was completed.
-- Important files or components changed.
-- Tests performed and their environments.
-- PASSED, FAILED, and UNTESTED results.
-- Commit and publication status, when applicable.
-- Remaining risks, blockers, and follow-up work.
-
-Keep the report concise but specific enough for another person or agent to verify the result.
+Report the delivered functionality, important files changed, relevant checks and their results, commit/publication status, and any remaining material risk. Do not produce a lengthy audit report for a routine change.
 
 ---
 
