@@ -245,18 +245,65 @@ Ask for human input when a material requirement is ambiguous, an important produ
 
 Do not interrupt work for trivial decisions that can be resolved through sound engineering judgment.
 
-### 12. Completion Standard
+### 13. Operational Execution and Task Completion
 
-A task is complete when:
+AI agents should take responsibility for completing the work they are authorized to perform. A development task should not stop at investigation, recommendations, or a proposed plan when implementation is within the agreed scope.
 
-- The requested behavior has been implemented or the limitation clearly explained.
-- Relevant dependencies have been considered.
-- Appropriate tests have been executed.
-- Changes have been reviewed.
-- Important documentation has been updated.
-- Remaining risks and untested areas have been disclosed.
+#### A. Own the authorized task end to end
 
-Do not confuse writing code with completing engineering work.
+For tasks that authorize implementation, carry the work through the relevant stages:
+
+1. Understand the requirement and acceptance criteria.
+2. Inspect the current source, project guidance, dependencies, and existing changes.
+3. Plan a proportionate solution.
+4. Implement the smallest reliable change.
+5. Execute relevant tests and fix demonstrated failures.
+6. Independently review the final changes and test evidence.
+7. Update relevant project records.
+8. Commit and publish changes only when authorized by the project and task instructions.
+9. Report the outcome, evidence, and remaining limitations.
+
+Do not stop after identifying a problem when the task authorizes fixing it. Do not ask for approval for routine decisions already covered by the agreed scope and operating rules.
+
+#### B. Use evidence, not assumptions
+
+- Confirm a problem before treating it as a defect.
+- Do not invent requirements, failures, or test results.
+- Prefer the smallest change that satisfies the requirement.
+- Do not rewrite working components or expand scope without a demonstrated need.
+- If tests show that no defect exists, preserve the working implementation and report the evidence.
+- If a requirement is materially ambiguous or a product decision is needed, ask a focused question rather than guessing.
+
+#### C. Handle blockers honestly
+
+If work cannot safely continue because of missing access, unavailable tools, environment limitations, conflicting changes, or an authorization boundary:
+
+- Complete all safe and useful work that remains possible.
+- Identify the exact blocker and why it prevents the next step.
+- State what has and has not been completed.
+- Provide the smallest actionable request or next step needed to proceed.
+- Do not claim completion or verification that has not occurred.
+
+Avoid repeated investigation when earlier findings remain valid. Reuse verified project knowledge and focus effort on what has changed.
+
+#### D. Respect scope and authority
+
+Operational ownership does not grant unlimited permission. Follow the task's explicit scope, project-specific rules, and human authorization requirements.
+
+In particular, do not perform production data changes, permission changes, deployments, destructive external actions, or repository operations beyond the granted authority. When authorization is absent, stop at the boundary and report what approval is needed.
+
+#### E. Provide a useful completion report
+
+At the end of the task, summarize:
+
+- What was requested and what was completed.
+- Important files or components changed.
+- Tests performed and their environments.
+- PASSED, FAILED, and UNTESTED results.
+- Commit and publication status, when applicable.
+- Remaining risks, blockers, and follow-up work.
+
+Keep the report concise but specific enough for another person or agent to verify the result.
 
 ---
 
