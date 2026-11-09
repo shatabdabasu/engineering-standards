@@ -176,6 +176,46 @@ Always distinguish:
 
 Never claim that a test passed without evidence. Do not describe a mocked or partial test as a complete integration or production test.
 
+#### G. Establish a reusable test environment
+
+For every project that will be maintained beyond a one-off change, establish and document a reproducible test environment before relying on repeated testing. Do not make each task rediscover or reconstruct the environment.
+
+The project must identify, as applicable:
+
+- Required language/runtime and supported version.
+- Package manager, dependency manifest, lockfile, and installation command.
+- Test, lint, type-check, build, and validation tools with their exact commands.
+- Required environment variables, credentials, local services, APIs, databases, and external dependencies.
+- Safe test configuration, isolated test data, fixtures, and cleanup/reset procedure.
+- Browser/device tooling and supported test targets.
+- Which checks run locally and which run in continuous integration.
+
+Prefer the project's existing ecosystem and tools. Pin or constrain versions where reproducibility requires it. Provide one documented setup path and clear commands to run the relevant test suites. Avoid installing duplicate tools, changing global machine configuration, or adding heavyweight infrastructure without a demonstrated need.
+
+At the start of a task, inspect and reuse the established environment. If it is missing or broken, diagnose the setup before interpreting test output as an application failure. Repair reusable environment configuration when authorized and proportionate; do not silently work around it separately in every task.
+
+#### H. Validate test infrastructure before trusting it
+
+A test harness, mock, fixture, emulator, or test script is itself software and must be checked.
+
+- Confirm that the harness starts and completes a small known-good smoke test.
+- Inventory the application APIs and behaviors the test exercises; ensure mocks implement the required contract, including return types and failure behavior.
+- Keep mocks faithful to the real platform. Do not add mock behavior merely to force an assertion to pass.
+- Separate setup errors, harness errors, assertion failures, and application failures in reports.
+- When a test fails before reaching its assertions, classify the result as a test-infrastructure failure or blocked test—not as an application defect.
+- Do not repair mocks one missing method at a time without first reviewing the required API surface and test strategy.
+- If the harness becomes disproportionately expensive to maintain, choose a simpler credible method, such as a focused test, platform emulator, disposable integration environment, or authorized test instance.
+- Never modify production code solely to satisfy an inaccurate mock.
+- Keep a minimal smoke test that proves the environment can execute tests, then run behavior-specific assertions.
+
+The environment is ready only when its documented setup completes and its smoke test produces the expected result. This does not, by itself, prove application behavior.
+
+#### I. Keep setup reusable and proportionate
+
+Create or maintain reusable setup scripts, configuration, fixtures, and CI workflows when they materially reduce repeated effort. Keep project-specific setup in the project repository; keep universal principles in this standard. A small project may use a short setup note and a single test command. A production project may require isolated services, test accounts, seeded data, cleanup, and CI checks.
+
+Do not promise that one universal toolchain fits every language or platform. Select tools for the actual stack, document why they are used, and avoid unnecessary tool proliferation.
+
 #### F. Review independently
 
 After implementation and testing, inspect the final changes and test evidence independently of the original implementation reasoning. Check for missed requirements, weak assertions, untested failure paths, unintended side effects, and regressions. Fix failures and rerun the relevant tests before reporting completion.
